@@ -1,0 +1,207 @@
+#+title: Try1
+
+
+
+* Here is the first component of the Implementation Algorithm course
+
+This is example to delete !
+
+#+begin_src python :var m=3 k=3 :exports both :results output
+#+end_src
+
+#+RESULTS:
+: The original list : [0, 1, 2]
+: All possible pairs : [(0, 1), (0, 2), (1, 2)]
+
+* Here is the actual solution
+#+NAME: data1
+| 2 | 3 | 3 | 4 | 5 | 5 | 5 | 5 |
+
+#+NAME: data2
+| 2 |
+| 3 |
+| 3 |
+| 4 |
+| 5 |
+| 5 |
+| 5 |
+| 5 |
+|   |    |
+
+#+name: barak_code
+#+begin_src python :results output :var m=5 k=4 :var processing_arr=data1
+# from itertools import combinations
+import numpy as np
+
+m = 5
+k = 4
+processing_arr = [2, 3, 3, 4, 5, 5, 5, 5]
+
+processing_arr = sorted(processing_arr)
+num_jobs = len(processing_arr)
+num_machine = m
+machine = [[] for _ in range(m)]
+# print(3)
+
+# machine[0] = processing_arr
+
+# put all jobs on machine 0
+for job, processing_time in enumerate(processing_arr):
+    machine[0].append(processing_time)
+
+
+# print(machine)
+def exchange(arr1, arr2, num1, num2):
+    """
+    Exchanging num1 from arr1 with num2 from arr2
+    False if exchange failed , True if exchange succeed
+    """
+    if num1 not in arr1:
+        return False
+    if num2 not in arr2:
+        return False
+    arr1.remove(num1)
+    arr2.remove(num2)
+    arr1.append(num2)
+    arr2.append(num1)
+    return True
+
+
+def move(arr1, arr2, num):
+    """
+    Moving num from arr1 to arr2
+    If num is not in arr1 returns False
+    If the move was successful return True
+    arr1 = [1,2,3]
+    arr2 = []
+    print(move(arr1 , arr2 , 2))
+    print(arr1)
+    print(arr2)
+    >>> True
+    >>> [1,3]
+    >>>[2]
+    """
+    if num not in arr1:
+        return False
+    arr1.remove(num)
+    arr2.append(num)
+    return True
+
+
+def evaluate_solution(machine):
+    """
+    Evaluate Solution , give score to current solution
+    machine = [[1,3],[3],[2,2,2]]
+    print(evaluate_solution(machine))
+    """
+    sum_arr = [sum(arr) for arr in machine]
+    current_score = max(sum_arr)
+    # sub_score = map(lambda a: a * a, sum_arr)
+    return current_score
+
+
+def get_highest_bin_index(machine):
+    sum_arr = [sum(arr) for arr in machine]
+    index_max = np.argmax(sum_arr)
+    return index_max
+
+
+def get_all_possible_pairs_from_list(m):
+    """Get all possible pairs from list
+    For example
+    given
+    >>>get_all_possible_pairs_from_list(3)
+    test_list = [0,1,2]
+    print("The original list : " + str(test_list))
+    res = list(combinations(test_list, 2))
+    print("All possible pairs : " + str(res))
+
+    : The original list : [0, 1, 2]
+    : All possible pairs : [(0, 1), (0, 2), (1, 2)]
+    """
+    pass
+
+
+def is_valid(machine):
+    """Checks if the machine is valid"""
+    sum_arr = [sum(arr) for arr in machine]
+    for index in range(2, m):
+        if sum_arr[index] > k:
+            return False
+    return True
+
+
+def move_toward_score(machine, min_score):
+    highest_bin_index = get_highest_bin_index(machine)
+    for move_to_index in [i for i in range(m) if m != highest_bin_index]:
+        for moved_num in sorted(machine[highest_bin_index]):  # reverse=True
+            if not move(machine[highest_bin_index], machine[move_to_index], moved_num):
+                print("Problem with move")
+            if is_valid(machine):
+                step_score = evaluate_solution(machine)
+                if step_score == min_score:
+                    # print("Successful replace with min")
+                    return machine
+
+            if not move(machine[move_to_index], machine[highest_bin_index], moved_num):
+                print("Problem with move")
+    print("Failed replaced with min")
+    return machine
+
+
+def local_search_example1(machine):
+    current_score = evaluate_solution(machine)
+    min_score = evaluate_solution(machine)
+    highest_bin_index = get_highest_bin_index(machine)
+    # Search for the solution
+    for move_to_index in [i for i in range(m) if m != highest_bin_index]:
+        for moved_num in sorted(machine[highest_bin_index]):  # reverse=True
+            if not move(machine[highest_bin_index], machine[move_to_index], moved_num):
+                print("Problem with move")
+            if is_valid(machine):
+                step_score = evaluate_solution(machine)
+                if step_score < min_score:
+                    # print("Found min! ")
+                    min_score = step_score
+            if not move(machine[move_to_index], machine[highest_bin_index], moved_num):
+                print("Problem with move")
+    if min_score == current_score:  # There was no local solution with improvements
+        return machine
+    # The actual move
+    move_toward_score(machine, min_score)
+    local_search_example1(machine)
+
+
+# m = 4
+# machine = [[3, 2, 2, 4, 3, 7], [], [], []]
+# local_search_example1(machine)
+# print(machine)
+
+print(machine)
+local_search_example1(machine)
+print(machine)
+#+end_src
+
+#+RESULTS: barak_code
+: [[2, 3, 3, 4, 5, 5, 5, 5], [], [], [], []]
+: [[3, 3, 4, 5], [5, 5, 5], [2], [], []]
+
+#+RESULTS:
+: [[[2, 3, 3, 4, 5, 5, 5, 5]], [], [], [], []]
+
+
+
+
+* Here are some runs with the previous code
+
+#+header: :noweb strip-export
+#+begin_src python
+m = 5
+k = 4
+processing_arr = [2, 3, 3, 4, 5, 5, 5, 5]
+<<barak_code>>
+
+#+end_src
+
+#+RESULTS:
+: None
