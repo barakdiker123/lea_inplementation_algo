@@ -1,3 +1,4 @@
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+title: Local Search Algorithm
 * Quickstart
 In order to run the program one should clone the repo and run the following command
@@ -5,7 +6,7 @@ In order to run the program one should clone the repo and run the following comm
 python local_search_algorithm.py --input_path test/input/input.py --output_dir test_dir
 #+end_src
 
-the input_path should point to a python file for example input.py
+the =input_path= should point to a python file for example input.py
 and should have the following content
 #+begin_src python
 m = 6
@@ -18,7 +19,7 @@ if one get stuck he can read the docs via the command
 python  local_search_algorithm.py --help
 #+end_src
 
-One should note that the final solution to the problem is in the output_dir under the name output_score.txt ,
+One should note that the final solution to the problem is in the =output_dir= under the name =output_score.txt= ,
 
 also there is more output contents
 
@@ -31,11 +32,11 @@ The Project try to solve the following schedule problem
 Scheduling with cardinality constraints.
 ** Input
 An integer number of (identical) machines m ≥ 2. A set of n jobs J =
-{1, 2, . . . , n}, where job j has an integer processing time pj > 0. A positive integer
+{1, 2, . . . , n}, where job j has an integer processing time p_j > 0. A positive integer
 parameter k.
 
 ** Goal
-Find a partition (assignment) of the jobs into subsets, I1, I2, . . . , Im, where
-for any 3 ≤ i ≤ m, it holds that |Ii| ≤ k (a cardinality constraint of k is enforced for
+Find a partition (assignment) of the jobs into subsets, I_1, I_2, . . . , I_m, where
+for any 3 ≤ i ≤ m, it holds that |I_i| ≤ k (a cardinality constraint of k is enforced for
 all machines except for possibly the first two machines, that is, every machine whose
 index is at least 3 can receive at most k jobs).
