@@ -1,14 +1,23 @@
 
 # Table of Contents
 
-1.  [Quickstart](#org6787f52)
-2.  [Abstract](#orgf7d11e6)
-    1.  [Input](#org1518929)
-    2.  [Goal](#orgf1ca517)
+1.  [Website](#org2ea9f56)
+2.  [Quickstart](#org53a3b7d)
+3.  [Abstract](#orge876f3a)
+    1.  [Input](#org7f1b0ea)
+    2.  [Goal](#orgc97be5e)
 
 
 
-<a id="org6787f52"></a>
+<a id="org2ea9f56"></a>
+
+# Website
+
+For Reading the docs with beautiful web please visit
+[website better graphics](https://barakdiker123.github.io/lea_inplementation_algo/)
+
+
+<a id="org53a3b7d"></a>
 
 # Quickstart
 
@@ -32,7 +41,7 @@ One should note that the final solution to the problem is in the `output_dir` un
 also there is more output contents
 
 
-<a id="orgf7d11e6"></a>
+<a id="orge876f3a"></a>
 
 # Abstract
 
@@ -41,7 +50,7 @@ The Project try to solve the following schedule problem
 Scheduling with cardinality constraints.
 
 
-<a id="org1518929"></a>
+<a id="org7f1b0ea"></a>
 
 ## Input
 
@@ -50,7 +59,7 @@ An integer number of (identical) machines m ≥ 2. A set of n jobs J =
 parameter k.
 
 
-<a id="orgf1ca517"></a>
+<a id="orgc97be5e"></a>
 
 ## Goal
 

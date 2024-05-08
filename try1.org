@@ -1,5 +1,8 @@
 #+SETUPFILE: https://fniessen.github.io/org-html-themes/org/theme-readtheorg.setup
 #+title: Local Search Algorithm
+* Website
+For Reading the docs with beautiful web please visit
+[[https://barakdiker123.github.io/lea_inplementation_algo/][website better graphics]]
 * Quickstart
 In order to run the program one should clone the repo and run the following command
 #+begin_src bash
