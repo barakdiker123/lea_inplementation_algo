@@ -5,6 +5,8 @@
 import pathlib
 import numpy as np
 import os
+import logging
+import argparse
 
 # m = 6
 # k = 5
@@ -22,6 +24,19 @@ import os
 ## put all jobs on machine 0
 # for job, processing_time in enumerate(processing_arr):
 #    machine[0].append(processing_time)
+formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+
+
+def setup_logger(name, log_file, level=logging.DEBUG):
+    """To setup as many loggers as you want"""
+
+    handler = logging.FileHandler(log_file)
+    handler.setFormatter(formatter)
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    logger.addHandler(handler)
+
+    return logger
 
 
 # print(machine)
@@ -118,6 +133,9 @@ def move_toward_score(machine, min_score, m, k):
                 step_score = evaluate_solution(machine)
                 if step_score == min_score:
                     # print("Successful replace with min")
+                    logger2.debug("Successful replaced with min")
+                    logger2.debug(machine)
+
                     return machine
 
             if not move(machine[move_to_index], machine[highest_bin_index], moved_num):
@@ -139,6 +157,9 @@ def local_search_example1(machine, m, k):
                 step_score = evaluate_solution(machine)
                 if step_score < min_score:
                     # print("Found min! ")
+                    #
+                    logger1.debug("Found min!")
+                    logger1.debug(machine)
                     min_score = step_score
             if not move(machine[move_to_index], machine[highest_bin_index], moved_num):
                 print("Problem with move")
@@ -155,14 +176,15 @@ def local_search_example1(machine, m, k):
 # print(machine)
 
 
-def create_instance(name_directory):
+def create_instance(name_directory, input_path="test/input/input.py"):
     # m = 6
     # k = 5
     # processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]
+
     import types
     import importlib.machinery
 
-    loader = importlib.machinery.SourceFileLoader("input", "test/input/input.py")
+    loader = importlib.machinery.SourceFileLoader("input", input_path)
     input_mod = types.ModuleType(loader.name)
     loader.exec_module(input_mod)
 
@@ -192,5 +214,62 @@ def create_instance(name_directory):
     output_cursor.close()
 
 
-name = "test"
-create_instance(name)
+def dir_path(string):
+    if os.path.exists(string):
+        return string
+    else:
+        raise NotADirectoryError(string)
+
+
+# name = "test"
+# name_directory = "test"
+
+# logging.basicConfig(
+#    level=logging.DEBUG,
+#    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
+#    datefmt="%m-%d %H:%M",
+#    filename="myapp.log",
+#    filemode="w",
+# )
+
+
+parser = argparse.ArgumentParser("simple_example")
+parser.add_argument(
+    "--input_path",
+    type=dir_path,
+    help='path to input file for example "test/input/input.py" \n the input.py should have the format \n \
+        m = 6 \n \
+        k=5 \n processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]',
+    default="test/input/input.py",
+)
+parser.add_argument(
+    "--output_dir",
+    help="A path to put all the output files ",
+    default="test",
+    # type=dir_path,
+)
+args = parser.parse_args()
+name = args.output_dir
+logger1 = setup_logger(
+    "myapp.area1", name + "/output/" + "finding_minimum_with_local_search.log"
+)
+# logger1 = logging.getLogger("myapp.area1")
+logger2 = setup_logger(
+    "myapp.area2",
+    name + "/output/" + "after_finding_the_smallest_do_the_replacement.log",
+)
+# logger2 = logging.getLogger("myapp.area2")
+# print(args.input_path)
+
+create_instance(args.output_dir, args.input_path)
+
+
+
+
+
+
+
+
+
+
+

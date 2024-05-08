@@ -1,0 +1,70 @@
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,615 DEBUG Successful replaced with min
+[[5, 5, 5, 2, 3, 3, 4, 4, 4], [5], [], [], [], []]
+[[5, 5, 5, 2, 3, 3, 4, 4, 4], [5], [], [], [], []]
+2024-05-08 13:00:20,615 DEBUG [[5, 5, 5, 2, 3, 3, 4, 4, 4], [5], [], [], [], []]
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,616 DEBUG Successful replaced with min
+[[5, 5, 2, 3, 3, 4, 4, 4], [5], [5], [], [], []]
+[[5, 5, 2, 3, 3, 4, 4, 4], [5], [5], [], [], []]
+2024-05-08 13:00:20,616 DEBUG [[5, 5, 2, 3, 3, 4, 4, 4], [5], [5], [], [], []]
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,617 DEBUG Successful replaced with min
+[[5, 2, 3, 3, 4, 4, 4], [5], [5], [5], [], []]
+[[5, 2, 3, 3, 4, 4, 4], [5], [5], [5], [], []]
+2024-05-08 13:00:20,617 DEBUG [[5, 2, 3, 3, 4, 4, 4], [5], [5], [5], [], []]
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,617 DEBUG Successful replaced with min
+[[2, 3, 3, 4, 4, 4], [5], [5], [5], [5], []]
+[[2, 3, 3, 4, 4, 4], [5], [5], [5], [5], []]
+2024-05-08 13:00:20,617 DEBUG [[2, 3, 3, 4, 4, 4], [5], [5], [5], [5], []]
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,618 DEBUG Successful replaced with min
+[[4, 4, 2, 3, 3], [5], [5], [5], [5], [4]]
+[[4, 4, 2, 3, 3], [5], [5], [5], [5], [4]]
+2024-05-08 13:00:20,618 DEBUG [[4, 4, 2, 3, 3], [5], [5], [5], [5], [4]]
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,618 DEBUG Successful replaced with min
+[[4, 2, 3, 3], [5, 4], [5], [5], [5], [4]]
+[[4, 2, 3, 3], [5, 4], [5], [5], [5], [4]]
+2024-05-08 13:00:20,618 DEBUG [[4, 2, 3, 3], [5, 4], [5], [5], [5], [4]]
+Successful replaced with min
+Successful replaced with min
+2024-05-08 13:00:20,618 DEBUG Successful replaced with min
+[[3, 3, 4], [5, 4, 2], [5], [5], [5], [4]]
+[[3, 3, 4], [5, 4, 2], [5], [5], [5], [4]]
+2024-05-08 13:00:20,618 DEBUG [[3, 3, 4], [5, 4, 2], [5], [5], [5], [4]]
+2024-05-08 20:47:16,203 DEBUG Successful replaced with min
+2024-05-08 20:47:16,204 DEBUG [[5, 5, 5, 2, 3, 3, 4, 4, 4], [5], [], [], [], []]
+2024-05-08 20:47:16,204 DEBUG Successful replaced with min
+2024-05-08 20:47:16,204 DEBUG [[5, 5, 2, 3, 3, 4, 4, 4], [5], [5], [], [], []]
+2024-05-08 20:47:16,205 DEBUG Successful replaced with min
+2024-05-08 20:47:16,205 DEBUG [[5, 2, 3, 3, 4, 4, 4], [5], [5], [5], [], []]
+2024-05-08 20:47:16,205 DEBUG Successful replaced with min
+2024-05-08 20:47:16,205 DEBUG [[2, 3, 3, 4, 4, 4], [5], [5], [5], [5], []]
+2024-05-08 20:47:16,205 DEBUG Successful replaced with min
+2024-05-08 20:47:16,205 DEBUG [[4, 4, 2, 3, 3], [5], [5], [5], [5], [4]]
+2024-05-08 20:47:16,205 DEBUG Successful replaced with min
+2024-05-08 20:47:16,205 DEBUG [[4, 2, 3, 3], [5, 4], [5], [5], [5], [4]]
+2024-05-08 20:47:16,206 DEBUG Successful replaced with min
+2024-05-08 20:47:16,206 DEBUG [[3, 3, 4], [5, 4, 2], [5], [5], [5], [4]]
+2024-05-08 20:55:43,616 DEBUG Successful replaced with min
+2024-05-08 20:55:43,616 DEBUG [[5, 5, 5, 2, 3, 3, 4, 4, 4], [5], [], [], [], [], []]
+2024-05-08 20:55:43,616 DEBUG Successful replaced with min
+2024-05-08 20:55:43,616 DEBUG [[5, 5, 2, 3, 3, 4, 4, 4], [5], [5], [], [], [], []]
+2024-05-08 20:55:43,617 DEBUG Successful replaced with min
+2024-05-08 20:55:43,617 DEBUG [[5, 2, 3, 3, 4, 4, 4], [5], [5], [5], [], [], []]
+2024-05-08 20:55:43,617 DEBUG Successful replaced with min
+2024-05-08 20:55:43,617 DEBUG [[2, 3, 3, 4, 4, 4], [5], [5], [5], [5], [], []]
+2024-05-08 20:55:43,617 DEBUG Successful replaced with min
+2024-05-08 20:55:43,617 DEBUG [[4, 4, 2, 3, 3], [5], [5], [5], [5], [4], []]
+2024-05-08 20:55:43,617 DEBUG Successful replaced with min
+2024-05-08 20:55:43,617 DEBUG [[4, 2, 3, 3], [5], [5], [5], [5], [4], [4]]
+2024-05-08 20:55:43,617 DEBUG Successful replaced with min
+2024-05-08 20:55:43,617 DEBUG [[3, 4, 2], [5, 3], [5], [5], [5], [4], [4]]
