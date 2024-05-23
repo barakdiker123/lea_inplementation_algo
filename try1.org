@@ -29,6 +29,14 @@ also there is more output contents
 
 
 
+
+* Visualizations
+for animation creation one can use the following command
+
+#+begin_src bash
+python local_search_algorithm.py --input_path possible_solutions/sol3/input/input.py --output_dir possible_solutions/sol3 --visualize_simple --animation_flag
+#+end_src
+This will create a new folder in =output= directory called =animation= with GIF
 * Abstract
 The Project try to solve the following schedule problem
 

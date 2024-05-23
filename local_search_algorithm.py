@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+import drawing_module
+import matplotlib.pyplot as plt
+import copy
 
 # from itertools import combinations
 import pathlib
@@ -7,6 +10,7 @@ import numpy as np
 import os
 import logging
 import argparse
+from drawing_module import draw_pandas_machine
 
 # m = 6
 # k = 5
@@ -24,6 +28,11 @@ import argparse
 ## put all jobs on machine 0
 # for job, processing_time in enumerate(processing_arr):
 #    machine[0].append(processing_time)
+
+
+animation_arr = []
+
+
 formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
 
 
@@ -135,6 +144,8 @@ def move_toward_score(machine, min_score, m, k):
                     # print("Successful replace with min")
                     logger2.debug("Successful replaced with min")
                     logger2.debug(machine)
+                    clone_machine = copy.deepcopy(machine)
+                    animation_arr.append(clone_machine)
 
                     return machine
 
@@ -176,7 +187,12 @@ def local_search_example1(machine, m, k):
 # print(machine)
 
 
-def create_instance(name_directory, input_path="test/input/input.py"):
+def create_instance(
+    name_directory, input_path, visualize_simple_bool, create_animation_flag
+):
+    """
+    example of input_path is "test/input/input.py"
+    """
     # m = 6
     # k = 5
     # processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]
@@ -196,6 +212,8 @@ def create_instance(name_directory, input_path="test/input/input.py"):
     num_jobs = len(processing_arr)
     num_machine = m
     machine = [[] for _ in range(m)]
+
+    pathlib.Path(name_directory + "/output").mkdir(parents=True, exist_ok=True)
     # print(3)
 
     # machine[0] = processing_arr
@@ -206,12 +224,25 @@ def create_instance(name_directory, input_path="test/input/input.py"):
 
     local_search_example1(machine, m, k)
     print(machine)
-    pathlib.Path(name_directory + "/output").mkdir(parents=True, exist_ok=True)
+    score, _ = evaluate_solution(machine)
+    print(score)
+
+    # pathlib.Path(name_directory + "/output").mkdir(parents=True, exist_ok=True)
     output_path_file = name_directory + "/output" + "/output_score.txt"
 
     output_cursor = open(output_path_file, "w+")
-    output_cursor.write(str(machine))
+    output_cursor.write(str("Current Solution: ") + str(machine))
+    output_cursor.write("\n")
+    output_cursor.write("Current Score: " + str(score))
     output_cursor.close()
+    if visualize_simple_bool:
+        draw_pandas_machine(machine)
+        plt.savefig(name_directory + "/output" + "/final_schedule_solution.png")
+        plt.show()
+    if create_animation_flag:
+        file_address = name_directory + "/output" + "/animation"
+        pathlib.Path(file_address).mkdir(parents=True, exist_ok=True)
+        drawing_module.create_animation(file_address, animation_arr)
 
 
 def dir_path(string):
@@ -234,6 +265,16 @@ def dir_path(string):
 
 
 parser = argparse.ArgumentParser("simple_example")
+parser.add_argument(
+    "--animation_flag",
+    action="store_true",
+    help="For animation add the --animation_flag flag ! ",
+)
+parser.add_argument(
+    "--visualize_simple",
+    action="store_true",
+    help="For visualizing add the --visualize_simple flag ! ",
+)
 parser.add_argument(
     "--input_path",
     type=dir_path,
@@ -261,15 +302,9 @@ logger2 = setup_logger(
 # logger2 = logging.getLogger("myapp.area2")
 # print(args.input_path)
 
-create_instance(args.output_dir, args.input_path)
+# if args.visualize_simple:
+#    print("Barak")
 
-
-
-
-
-
-
-
-
-
-
+create_instance(
+    args.output_dir, args.input_path, args.visualize_simple, args.animation_flag
+)
