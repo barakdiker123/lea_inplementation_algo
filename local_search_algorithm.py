@@ -242,7 +242,7 @@ def create_instance(
     if create_animation_flag:
         file_address = name_directory + "/output" + "/animation"
         pathlib.Path(file_address).mkdir(parents=True, exist_ok=True)
-        drawing_module.create_animation(file_address, animation_arr)
+        drawing_module.create_animation(file_address, animation_arr, k)
 
 
 def dir_path(string):
