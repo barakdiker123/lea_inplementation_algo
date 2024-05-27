@@ -9,43 +9,37 @@ import pathlib
 import numpy as np
 import os
 import logging
+import time
 import argparse
 from drawing_module import draw_pandas_machine
-
-# m = 6
-# k = 5
-# processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]
-#
-#
-# processing_arr = sorted(processing_arr)
-# num_jobs = len(processing_arr)
-# num_machine = m
-# machine = [[] for _ in range(m)]
-## print(3)
-#
-## machine[0] = processing_arr
-#
-## put all jobs on machine 0
-# for job, processing_time in enumerate(processing_arr):
-#    machine[0].append(processing_time)
 
 
 animation_arr = []
 
 
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+def static_vars(**kwargs):
+    def decorate(func):
+        for k in kwargs:
+            setattr(func, k, kwargs[k])
+        return func
+
+    return decorate
 
 
-def setup_logger(name, log_file, level=logging.DEBUG):
-    """To setup as many loggers as you want"""
-
-    handler = logging.FileHandler(log_file)
-    handler.setFormatter(formatter)
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.addHandler(handler)
-
-    return logger
+#
+# formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+#
+#
+# def setup_logger(name, log_file, level=logging.DEBUG):
+#    """To setup as many loggers as you want"""
+#
+#    handler = logging.FileHandler(log_file)
+#    handler.setFormatter(formatter)
+#    logger = logging.getLogger(name)
+#    logger.setLevel(level)
+#    logger.addHandler(handler)
+#
+#    return logger
 
 
 # print(machine)
@@ -125,13 +119,14 @@ def get_all_possible_pairs_from_list(m):
 
 def is_valid(machine, m, k):
     """Checks if the machine is valid"""
-    sum_arr = [sum(arr) for arr in machine]
+    sum_arr = [len(arr) for arr in machine]
     for index in range(2, m):
         if sum_arr[index] > k:
             return False
     return True
 
 
+@static_vars(total_steps_taken=0)
 def move_toward_score(machine, min_score, m, k):
     highest_bin_index = get_highest_bin_index(machine)
     for move_to_index in [i for i in range(m) if m != highest_bin_index]:
@@ -142,8 +137,38 @@ def move_toward_score(machine, min_score, m, k):
                 step_score = evaluate_solution(machine)
                 if step_score == min_score:
                     # print("Successful replace with min")
+                    logger2.debug(
+                        "--------------------------------------------------------------"
+                    )
                     logger2.debug("Successful replaced with min")
+                    move_toward_score.total_steps_taken += 1
+                    logger2.debug(
+                        "This is step number:  "
+                        + str(move_toward_score.total_steps_taken)
+                    )
+                    logger2.debug("Current Machine distrbute jobs :")
                     logger2.debug(machine)
+                    sum_of_each_machine = [sum(any_machine) for any_machine in machine]
+                    logger2.debug("Current Machine distrbute sum :")
+                    logger2.debug(sum_of_each_machine)
+                    number_of_jobs_per_machine = [
+                        len(any_machine) for any_machine in machine
+                    ]
+                    logger2.debug("How many jobs each machine has :")
+                    logger2.debug(number_of_jobs_per_machine)
+                    logger2.debug(
+                        "Current move from machine: " + str(highest_bin_index)
+                    )
+                    logger2.debug("To machine: " + str(move_to_index))
+                    logger2.debug("The Moved job has a weight of " + str(moved_num))
+                    current_score, sub_score = evaluate_solution(machine)
+                    logger2.debug(
+                        "The Maximum machine has total weight of: " + str(current_score)
+                    )
+                    logger2.debug(
+                        "The machines has subscore squares of : " + str(sub_score)
+                    )
+
                     clone_machine = copy.deepcopy(machine)
                     animation_arr.append(clone_machine)
 
@@ -188,7 +213,12 @@ def local_search_example1(machine, m, k):
 
 
 def create_instance(
-    name_directory, input_path, visualize_simple_bool, create_animation_flag
+    name_directory,
+    input_path,
+    visualize_simple_bool,
+    create_animation_flag,
+    logger1_temp,
+    logger2_temp,
 ):
     """
     example of input_path is "test/input/input.py"
@@ -196,6 +226,10 @@ def create_instance(
     # m = 6
     # k = 5
     # processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]
+    global logger1
+    global logger2
+    logger1 = logger1_temp
+    logger2 = logger2_temp
 
     import types
     import importlib.machinery
@@ -222,7 +256,9 @@ def create_instance(
     for job, processing_time in enumerate(processing_arr):
         machine[0].append(processing_time)
 
+    start_time = time.time()
     local_search_example1(machine, m, k)
+    end_time = time.time()
     print(machine)
     score, _ = evaluate_solution(machine)
     print(score)
@@ -234,6 +270,19 @@ def create_instance(
     output_cursor.write(str("Current Solution: ") + str(machine))
     output_cursor.write("\n")
     output_cursor.write("Current Score: " + str(score))
+    output_cursor.write("\n")
+    average_weight_to_machines = sum(processing_arr) / m
+    average_weight_to_jobs = sum(processing_arr) / len(processing_arr)
+    output_cursor.write(
+        "Average weight per machine:  " + str(average_weight_to_machines)
+    )
+    output_cursor.write("\n")
+    output_cursor.write("Average weight per job:  " + str(average_weight_to_jobs))
+    output_cursor.write("\n")
+    output_cursor.write("Sum of weights of all the jobs:  " + str(sum(processing_arr)))
+    output_cursor.write("\n")
+    output_cursor.write("The Total time taken is: " + str(end_time - start_time))
+
     output_cursor.close()
     if visualize_simple_bool:
         draw_pandas_machine(machine)
@@ -243,68 +292,3 @@ def create_instance(
         file_address = name_directory + "/output" + "/animation"
         pathlib.Path(file_address).mkdir(parents=True, exist_ok=True)
         drawing_module.create_animation(file_address, animation_arr, k)
-
-
-def dir_path(string):
-    if os.path.exists(string):
-        return string
-    else:
-        raise NotADirectoryError(string)
-
-
-# name = "test"
-# name_directory = "test"
-
-# logging.basicConfig(
-#    level=logging.DEBUG,
-#    format="%(asctime)s %(name)-12s %(levelname)-8s %(message)s",
-#    datefmt="%m-%d %H:%M",
-#    filename="myapp.log",
-#    filemode="w",
-# )
-
-
-parser = argparse.ArgumentParser("simple_example")
-parser.add_argument(
-    "--animation_flag",
-    action="store_true",
-    help="For animation add the --animation_flag flag ! ",
-)
-parser.add_argument(
-    "--visualize_simple",
-    action="store_true",
-    help="For visualizing add the --visualize_simple flag ! ",
-)
-parser.add_argument(
-    "--input_path",
-    type=dir_path,
-    help='path to input file for example "test/input/input.py" \n the input.py should have the format \n \
-        m = 6 \n \
-        k=5 \n processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]',
-    default="test/input/input.py",
-)
-parser.add_argument(
-    "--output_dir",
-    help="A path to put all the output files ",
-    default="test",
-    # type=dir_path,
-)
-args = parser.parse_args()
-name = args.output_dir
-logger1 = setup_logger(
-    "myapp.area1", name + "/output/" + "finding_minimum_with_local_search.log"
-)
-# logger1 = logging.getLogger("myapp.area1")
-logger2 = setup_logger(
-    "myapp.area2",
-    name + "/output/" + "after_finding_the_smallest_do_the_replacement.log",
-)
-# logger2 = logging.getLogger("myapp.area2")
-# print(args.input_path)
-
-# if args.visualize_simple:
-#    print("Barak")
-
-create_instance(
-    args.output_dir, args.input_path, args.visualize_simple, args.animation_flag
-)

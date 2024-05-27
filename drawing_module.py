@@ -13,7 +13,7 @@ def draw_pandas_machine(machine, disp_text=""):
 
     plt.cla()
     df = pd.DataFrame(machine)
-    print(df.sum())
+    # print(df.sum())
     # df.index = df.index + df.sum()
     df.plot(
         ax=ax,
