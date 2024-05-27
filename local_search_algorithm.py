@@ -127,6 +127,27 @@ def is_valid(machine, m, k):
 
 
 @static_vars(total_steps_taken=0)
+def send_data_to_logger(machine, from_machine_index, to_machine_index, moved_num):
+    logger2.debug("--------------------------------------------------------------")
+    logger2.debug("Successful replaced with min")
+    send_data_to_logger.total_steps_taken += 1
+    logger2.debug("This is step number:  " + str(send_data_to_logger.total_steps_taken))
+    logger2.debug("Current Machine distrbute jobs :")
+    logger2.debug(machine)
+    sum_of_each_machine = [sum(any_machine) for any_machine in machine]
+    logger2.debug("Current Machine distrbute sum :")
+    logger2.debug(sum_of_each_machine)
+    number_of_jobs_per_machine = [len(any_machine) for any_machine in machine]
+    logger2.debug("How many jobs each machine has :")
+    logger2.debug(number_of_jobs_per_machine)
+    logger2.debug("Current move from machine: " + str(from_machine_index))
+    logger2.debug("To machine: " + str(to_machine_index))
+    logger2.debug("The Moved job has a weight of " + str(moved_num))
+    current_score, sub_score = evaluate_solution(machine)
+    logger2.debug("The Maximum machine has total weight of: " + str(current_score))
+    logger2.debug("The machines has subscore squares of : " + str(sub_score))
+
+
 def move_toward_score(machine, min_score, m, k):
     highest_bin_index = get_highest_bin_index(machine)
     for move_to_index in [i for i in range(m) if m != highest_bin_index]:
@@ -136,39 +157,9 @@ def move_toward_score(machine, min_score, m, k):
             if is_valid(machine, m, k):
                 step_score = evaluate_solution(machine)
                 if step_score == min_score:
-                    # print("Successful replace with min")
-                    logger2.debug(
-                        "--------------------------------------------------------------"
+                    send_data_to_logger(
+                        machine, highest_bin_index, move_to_index, moved_num
                     )
-                    logger2.debug("Successful replaced with min")
-                    move_toward_score.total_steps_taken += 1
-                    logger2.debug(
-                        "This is step number:  "
-                        + str(move_toward_score.total_steps_taken)
-                    )
-                    logger2.debug("Current Machine distrbute jobs :")
-                    logger2.debug(machine)
-                    sum_of_each_machine = [sum(any_machine) for any_machine in machine]
-                    logger2.debug("Current Machine distrbute sum :")
-                    logger2.debug(sum_of_each_machine)
-                    number_of_jobs_per_machine = [
-                        len(any_machine) for any_machine in machine
-                    ]
-                    logger2.debug("How many jobs each machine has :")
-                    logger2.debug(number_of_jobs_per_machine)
-                    logger2.debug(
-                        "Current move from machine: " + str(highest_bin_index)
-                    )
-                    logger2.debug("To machine: " + str(move_to_index))
-                    logger2.debug("The Moved job has a weight of " + str(moved_num))
-                    current_score, sub_score = evaluate_solution(machine)
-                    logger2.debug(
-                        "The Maximum machine has total weight of: " + str(current_score)
-                    )
-                    logger2.debug(
-                        "The machines has subscore squares of : " + str(sub_score)
-                    )
-
                     clone_machine = copy.deepcopy(machine)
                     animation_arr.append(clone_machine)
 
