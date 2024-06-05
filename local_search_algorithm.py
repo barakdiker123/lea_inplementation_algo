@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from itertools import combinations
+import itertools
 import drawing_module
 import matplotlib.pyplot as plt
 import copy
@@ -12,7 +14,7 @@ import logging
 import time
 import argparse
 from drawing_module import draw_pandas_machine
-
+import jobs
 
 animation_arr = []
 
@@ -127,11 +129,21 @@ def is_valid(machine, m, k):
 
 
 @static_vars(total_steps_taken=0)
-def send_data_to_logger(machine, from_machine_index, to_machine_index, moved_num):
-    logger2.debug("--------------------------------------------------------------")
+def send_data_to_logger(
+        machine, from_machine_index, to_machine_index,
+        moved_num, machine_with_id, type_of_action
+):
+    logger2.debug(
+        "--------------------------------------------------------------")
+    if type_of_action == "exchange":
+        logger2.debug("The type of action is exchange")
+    if type_of_action == "move":
+        logger2.debug("The type of action is move")
+
     logger2.debug("Successful replaced with min")
     send_data_to_logger.total_steps_taken += 1
-    logger2.debug("This is step number:  " + str(send_data_to_logger.total_steps_taken))
+    logger2.debug("This is step number:  " +
+                  str(send_data_to_logger.total_steps_taken))
     logger2.debug("Current Machine distrbute jobs :")
     logger2.debug(machine)
     sum_of_each_machine = [sum(any_machine) for any_machine in machine]
@@ -144,11 +156,14 @@ def send_data_to_logger(machine, from_machine_index, to_machine_index, moved_num
     logger2.debug("To machine: " + str(to_machine_index))
     logger2.debug("The Moved job has a weight of " + str(moved_num))
     current_score, sub_score = evaluate_solution(machine)
-    logger2.debug("The Maximum machine has total weight of: " + str(current_score))
+    logger2.debug("The Maximum machine has total weight of: " +
+                  str(current_score))
     logger2.debug("The machines has subscore squares of : " + str(sub_score))
+    logger2.debug("Current machines")
+    logger2.debug(str(machine_with_id))
 
 
-def move_toward_score(machine, min_score, m, k):
+def move_toward_score(machine, min_score, m, k, machine_with_id):
     highest_bin_index = get_highest_bin_index(machine)
     for move_to_index in [i for i in range(m) if m != highest_bin_index]:
         for moved_num in sorted(machine[highest_bin_index]):  # reverse=True
@@ -156,10 +171,19 @@ def move_toward_score(machine, min_score, m, k):
                 print("Problem with move")
             if is_valid(machine, m, k):
                 step_score = evaluate_solution(machine)
+                # print(machine_with_id)
+                # print(machine)
                 if step_score == min_score:
                     send_data_to_logger(
-                        machine, highest_bin_index, move_to_index, moved_num
+                        machine,
+                        highest_bin_index,
+                        move_to_index,
+                        moved_num,
+                        machine_with_id,
+                        "move",
                     )
+                    machine_with_id.move(
+                        highest_bin_index, move_to_index, moved_num)
                     clone_machine = copy.deepcopy(machine)
                     animation_arr.append(clone_machine)
 
@@ -171,7 +195,7 @@ def move_toward_score(machine, min_score, m, k):
     return machine
 
 
-def local_search_example1(machine, m, k):
+def local_search_example1(machine, m, k, machine_with_id):
     current_score = evaluate_solution(machine)
     min_score = evaluate_solution(machine)
     highest_bin_index = get_highest_bin_index(machine)
@@ -193,9 +217,73 @@ def local_search_example1(machine, m, k):
     if min_score == current_score:  # There was no local solution with improvements
         return machine
     # The actual move
-    move_toward_score(machine, min_score, m, k)
-    local_search_example1(machine, m, k)
+    move_toward_score(machine, min_score, m, k, machine_with_id)
+    local_search_example1(machine, m, k, machine_with_id)
 
+
+def exchange_search_sol(machine, m, k, machine_with_id):
+    """
+    Exchanges jobs between machines , return the new machines split and True if changed
+    False if didn't change anything
+    Example of usage:
+    exchange_search_sol([[1,2,3],[3,4,4]],2,4,[])
+    output:
+    ([[1, 2, 3], [4, 4, 3]], True)
+    exchange_search_sol([[1,2,3],[1,2,3],[3,4],[5,6]],4,2,[])
+    output:
+    ([[3, 1, 5], [1, 2, 3], [3, 4], [6, 2]], True)
+    """
+    current_score = evaluate_solution(machine)
+    min_score = evaluate_solution(machine)
+    for machine1, machine2 in combinations(range(len(machine)), 2):
+        for job1, job2 in itertools.product(machine[machine1], machine[machine2]):
+            if not exchange(machine[machine1], machine[machine2], job1, job2):
+                print("Fail to move ")
+            if is_valid(machine, m, k):
+                step_score = evaluate_solution(machine)
+                if step_score < min_score:
+                    print("Found minimum with exchange")
+                    print(machine)
+                    min_score = step_score
+            if not exchange(machine[machine1], machine[machine2], job2, job1):
+                print("Fail to move ")
+    if min_score == current_score:
+        return machine, False
+    machine = exchange_toward_score(machine, min_score, m, k, machine_with_id)
+    return machine, True
+    # exchange_search_sol(machine, m, k, machine_with_id)
+
+
+def exchange_toward_score(machine, min_score, m, k, machine_with_id):
+    current_score = evaluate_solution(machine)
+    machine_step = copy.deepcopy(machine)
+    for machine1, machine2 in combinations(range(len(machine)), 2):
+        for job1, job2 in itertools.product(machine[machine1], machine[machine2]):
+            if not exchange(machine[machine1], machine[machine2], job1, job2):
+                print("Fail to move ")
+            if is_valid(machine, m, k):
+                step_score = evaluate_solution(machine)
+                if step_score == min_score:
+                    send_data_to_logger(
+                        machine,
+                        machine1,  # Number of machine to exchange
+                        machine2,  # number of machine to exchange
+                        (job1, job2),
+                        machine_with_id,
+                        "exchange",
+                    )
+                    print("Replace minimum with exchange")
+                    print(machine)
+                    min_score = step_score
+                    machine_with_id.exchange(machine1, machine2, job1, job2)
+                    clone_machine = copy.deepcopy(machine)
+                    animation_arr.append(clone_machine)
+                    print("Job1 is :", job1)
+                    print("Job2 is :", job2)
+                    return machine
+
+            if not exchange(machine[machine1], machine[machine2], job2, job1):
+                print("Fail to move ")
 
 # m = 4
 # machine = [[3, 2, 2, 4, 3, 7], [], [], []]
@@ -246,9 +334,15 @@ def create_instance(
     # put all jobs on machine 0
     for job, processing_time in enumerate(processing_arr):
         machine[0].append(processing_time)
+    machine_with_id = jobs.Jobs(processing_arr, m)
 
     start_time = time.time()
-    local_search_example1(machine, m, k)
+    local_search_example1(machine, m, k, machine_with_id)
+
+    keep_exchanging = True
+    while keep_exchanging:
+        machine, keep_exchanging = exchange_search_sol(machine, m, k, machine_with_id)
+
     end_time = time.time()
     print(machine)
     score, _ = evaluate_solution(machine)
@@ -268,16 +362,27 @@ def create_instance(
         "Average weight per machine:  " + str(average_weight_to_machines)
     )
     output_cursor.write("\n")
-    output_cursor.write("Average weight per job:  " + str(average_weight_to_jobs))
+    output_cursor.write("Average weight per job:  " +
+                        str(average_weight_to_jobs))
     output_cursor.write("\n")
-    output_cursor.write("Sum of weights of all the jobs:  " + str(sum(processing_arr)))
+    output_cursor.write(
+        "Sum of weights of all the jobs:  " + str(sum(processing_arr)))
     output_cursor.write("\n")
-    output_cursor.write("The Total time taken is: " + str(end_time - start_time))
+    output_cursor.write("The Total time taken is: " +
+                        str(end_time - start_time))
+    output_cursor.write("\n")
+    output_cursor.write("The machine solution with Job ID is : ")
+    output_cursor.write(str(machine_with_id))
+    output_cursor.write("\n")
 
+    with open(input_path) as f:
+        for line in f:
+            output_cursor.write(line)
     output_cursor.close()
     if visualize_simple_bool:
         draw_pandas_machine(machine)
-        plt.savefig(name_directory + "/output" + "/final_schedule_solution.png")
+        plt.savefig(name_directory + "/output" +
+                    "/final_schedule_solution.png")
         plt.show()
     if create_animation_flag:
         file_address = name_directory + "/output" + "/animation"

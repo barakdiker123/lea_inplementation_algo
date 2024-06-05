@@ -13,6 +13,10 @@ def draw_pandas_machine(machine, disp_text=""):
 
     plt.cla()
     df = pd.DataFrame(machine)
+    # Start sort values
+    df[:] = np.sort(df.values)
+    # End sort Values
+    #
     # print(df.sum())
     # df.index = df.index + df.sum()
     df.plot(
