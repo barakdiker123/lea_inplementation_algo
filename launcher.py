@@ -4,7 +4,8 @@ import argparse
 import os
 import logging
 
-formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+# formatter = logging.Formatter("%(asctime)s %(levelname)s %(message)s")
+formatter = logging.Formatter("%(message)s")
 
 
 def setup_logger(name, log_file, level=logging.DEBUG):
@@ -56,9 +57,10 @@ def init():
     )
     args = parser.parse_args()
     name = args.output_dir
-    logger1 = setup_logger(
-        "myapp.area1", name + "/output/" + "finding_minimum_with_local_search.log"
-    )
+    logger1 = None
+   # logger1 = setup_logger(
+   #    "myapp.area1", name + "/output/" + "finding_minimum_with_local_search.log"
+   # )
     # logger1 = logging.getLogger("myapp.area1")
     logger2 = setup_logger(
         "myapp.area2",

@@ -51,3 +51,7 @@ Find a partition (assignment) of the jobs into subsets, I_1, I_2, . . . , I_m, w
 for any 3 ≤ i ≤ m, it holds that |I_i| ≤ k (a cardinality constraint of k is enforced for
 all machines except for possibly the first two machines, that is, every machine whose
 index is at least 3 can receive at most k jobs).
+* Command to test
+#+BEGIN_SRC bash
+sudo python launcher.py --input_path possible_solutions/lea_inputs/question_3/2l/input/input.py --output_dir possible_solutions/lea_inputs/question_3/2l --visualize_simple --animation_flag
+#+END_SRC

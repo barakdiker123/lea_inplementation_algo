@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+# /usr/bin/env python3
 
 from itertools import combinations
 import itertools
@@ -82,22 +82,36 @@ def move(arr1, arr2, num):
     return True
 
 
-def evaluate_solution(machine):
+def evaluate_solution_count_job(machine):
+    count_arr = [len(arr) for arr in machine]
+    sorted_count_arr = sorted(count_arr)
+    return sorted_count_arr[::-1]
+
+
+def get_highest_bin_index_count_job(machine):
+    count_arr = [len(arr) for arr in machine]
+    index_max = np.argmax(count_arr)
+    return index_max
+
+
+def evaluate_solution_global(machine):
     """
     Evaluate Solution , give score to current solution
     machine = [[1,3],[3],[2,2,2]]
     print(evaluate_solution(machine))
     """
     sum_arr = [sum(arr) for arr in machine]
-    current_score = max(sum_arr)
-    # sub_score_arr = [list(map(lambda a: a * a, arr)) for arr in machine]
-    sub_score_arr = map(lambda a: a * a, sum_arr)
-    sub_score = sum(sub_score_arr)
-    # print(sub_score)
-    return current_score, sub_score
+    # current_score = max(sum_arr)
+    # sub_score_arr = map(lambda a: a * a, sum_arr)
+    # sub_score = sum(sub_score_arr)
+    sorted_sum_arr = sorted(sum_arr)
+
+    return sorted_sum_arr[::-1]
+
+    # return current_score, sub_score
 
 
-def get_highest_bin_index(machine):
+def get_highest_bin_index_global(machine):
     sum_arr = [sum(arr) for arr in machine]
     index_max = np.argmax(sum_arr)
     return index_max
@@ -155,15 +169,17 @@ def send_data_to_logger(
     logger2.debug("Current move from machine: " + str(from_machine_index))
     logger2.debug("To machine: " + str(to_machine_index))
     logger2.debug("The Moved job has a weight of " + str(moved_num))
-    current_score, sub_score = evaluate_solution(machine)
+    current_score, *rest = evaluate_solution_global(machine)
     logger2.debug("The Maximum machine has total weight of: " +
                   str(current_score))
-    logger2.debug("The machines has subscore squares of : " + str(sub_score))
+    logger2.debug("The machines has subscore of : " + str(rest))
     logger2.debug("Current machines")
     logger2.debug(str(machine_with_id))
 
 
-def move_toward_score(machine, min_score, m, k, machine_with_id):
+def move_toward_score(machine, min_score, m, k, machine_with_id,
+                      evaluate_solution=evaluate_solution_global,
+                      get_highest_bin_index=get_highest_bin_index_global):
     highest_bin_index = get_highest_bin_index(machine)
     for move_to_index in [i for i in range(m) if m != highest_bin_index]:
         for moved_num in sorted(machine[highest_bin_index]):  # reverse=True
@@ -195,11 +211,14 @@ def move_toward_score(machine, min_score, m, k, machine_with_id):
     return machine
 
 
-def local_search_example1(machine, m, k, machine_with_id):
+def local_search_example1(machine, m, k, machine_with_id,
+                          evaluate_solution=evaluate_solution_global,
+                          get_highest_bin_index=get_highest_bin_index_global):
     current_score = evaluate_solution(machine)
     min_score = evaluate_solution(machine)
     highest_bin_index = get_highest_bin_index(machine)
     # Search for the solution
+    # print(highest_bin_index)
     for move_to_index in [i for i in range(m) if m != highest_bin_index]:
         for moved_num in sorted(machine[highest_bin_index]):  # reverse=True
             if not move(machine[highest_bin_index], machine[move_to_index], moved_num):
@@ -209,19 +228,55 @@ def local_search_example1(machine, m, k, machine_with_id):
                 if step_score < min_score:
                     # print("Found min! ")
                     #
-                    logger1.debug("Found min!")
-                    logger1.debug(machine)
+                    # logger1.debug("Found min!")
+                    # logger1.debug(machine)
                     min_score = step_score
             if not move(machine[move_to_index], machine[highest_bin_index], moved_num):
                 print("Problem with move")
-    if min_score == current_score:  # There was no local solution with improvements
-        return machine
+    # There was no local solution with improvements
+    if min_score == current_score:
+        return machine, False
     # The actual move
-    move_toward_score(machine, min_score, m, k, machine_with_id)
-    local_search_example1(machine, m, k, machine_with_id)
+    move_toward_score(machine, min_score, m, k, machine_with_id,
+                      evaluate_solution, get_highest_bin_index)
+    return machine, True
+    # local_search_example1(machine, m, k, machine_with_id)
 
 
-def exchange_search_sol(machine, m, k, machine_with_id):
+def exchange_first_sol_better(machine, m, k, machine_with_id, evaluate_solution=evaluate_solution_global):
+    """
+    Exchanges the first pair of job that improve the overall score
+    """
+    current_score = evaluate_solution(machine)
+    for machine1, machine2 in combinations(range(len(machine)), 2):
+        for job1, job2 in itertools.product(machine[machine1], machine[machine2]):
+            if not exchange(machine[machine1], machine[machine2], job1, job2):
+                print("Fail to move ")
+            if is_valid(machine, m, k):
+                step_score = evaluate_solution(machine)
+                if step_score < current_score:
+                    print("Found minimum with exchange first ")
+                    send_data_to_logger(
+                        machine,
+                        machine1,  # Number of machine to exchange
+                        machine2,  # number of machine to exchange
+                        (job1, job2),
+                        machine_with_id,
+                        "exchange",
+                    )
+                    print("Replace minimum with exchange first ")
+                    print(machine)
+                    machine_with_id.exchange(machine1, machine2, job1, job2)
+                    # clone_machine = copy.deepcopy(machine)
+                    # animation_arr.append(clone_machine)
+
+                    return machine, True
+            if not exchange(machine[machine1], machine[machine2], job2, job1):
+                print("Fail to move ")
+    return machine, False
+
+
+def exchange_search_sol(machine, m, k, machine_with_id, evaluate_solution=evaluate_solution_global):
     """
     Exchanges jobs between machines , return the new machines split and True if changed
     False if didn't change anything
@@ -249,14 +304,15 @@ def exchange_search_sol(machine, m, k, machine_with_id):
                 print("Fail to move ")
     if min_score == current_score:
         return machine, False
-    machine = exchange_toward_score(machine, min_score, m, k, machine_with_id)
+    machine = exchange_toward_score(
+        machine, min_score, m, k, machine_with_id)
     return machine, True
     # exchange_search_sol(machine, m, k, machine_with_id)
 
 
-def exchange_toward_score(machine, min_score, m, k, machine_with_id):
-    current_score = evaluate_solution(machine)
-    machine_step = copy.deepcopy(machine)
+def exchange_toward_score(machine, min_score, m, k, machine_with_id, evaluate_solution=evaluate_solution_global):
+    # current_score = evaluate_solution(machine)
+    # machine_step = copy.deepcopy(machine)
     for machine1, machine2 in combinations(range(len(machine)), 2):
         for job1, job2 in itertools.product(machine[machine1], machine[machine2]):
             if not exchange(machine[machine1], machine[machine2], job1, job2):
@@ -273,11 +329,11 @@ def exchange_toward_score(machine, min_score, m, k, machine_with_id):
                         "exchange",
                     )
                     print("Replace minimum with exchange")
-                    print(machine)
+                    # print(machine)
                     min_score = step_score
                     machine_with_id.exchange(machine1, machine2, job1, job2)
-                    clone_machine = copy.deepcopy(machine)
-                    animation_arr.append(clone_machine)
+                    # clone_machine = copy.deepcopy(machine)
+                    # animation_arr.append(clone_machine)
                     print("Job1 is :", job1)
                     print("Job2 is :", job2)
                     return machine
@@ -307,7 +363,7 @@ def create_instance(
     # processing_arr = [2, 3, 3, 4, 4, 4, 5, 5, 5, 5]
     global logger1
     global logger2
-    logger1 = logger1_temp
+    # logger1 = logger1_temp
     logger2 = logger2_temp
 
     import types
@@ -336,16 +392,39 @@ def create_instance(
         machine[0].append(processing_time)
     machine_with_id = jobs.Jobs(processing_arr, m)
 
+    # depth_score = 0
     start_time = time.time()
-    local_search_example1(machine, m, k, machine_with_id)
+    previous_machine = []
+    while previous_machine != machine:
+        previous_machine = copy.deepcopy(machine)
+        keep_exchanging1 = True
+        while keep_exchanging1:
+            machine, keep_exchanging1 = local_search_example1(
+                machine, m, k, machine_with_id)
 
-    keep_exchanging = True
-    while keep_exchanging:
-        machine, keep_exchanging = exchange_search_sol(machine, m, k, machine_with_id)
+        keep_exchanging2 = True
+        while keep_exchanging2:
+            machine, keep_exchanging2 = local_search_example1(
+                machine, m, k, machine_with_id,
+                evaluate_solution_count_job,
+                get_highest_bin_index_count_job)
+
+        keep_exchanging3 = True
+        while keep_exchanging3:
+            machine, keep_exchanging3 = local_search_example1(
+                machine, m, k, machine_with_id)
+
+    # keep_exchanging = True
+    # while keep_exchanging:
+        machine, keep_exchanging = exchange_first_sol_better(
+            machine, m, k, machine_with_id)
+
+    # machine, keep_exchanging = exchange_search_sol(
+    #    machine, m, k, machine_with_id)
 
     end_time = time.time()
     print(machine)
-    score, _ = evaluate_solution(machine)
+    score, *rest = evaluate_solution_global(machine)
     print(score)
 
     # pathlib.Path(name_directory + "/output").mkdir(parents=True, exist_ok=True)
