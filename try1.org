@@ -55,3 +55,31 @@ index is at least 3 can receive at most k jobs).
 #+BEGIN_SRC bash
 sudo python launcher.py --input_path possible_solutions/lea_inputs/question_3/2l/input/input.py --output_dir possible_solutions/lea_inputs/question_3/2l --visualize_simple --animation_flag
 #+END_SRC
+* Algorithm Local Search Barak's heuristic
+
+
+How the Final algorithm works
+Given an array of jobs which I'll call processing_arr , number of machines which will be marked with m , and a maximus job number for machine of greater index of 3 which be be marked as k
+
+The following process will take place
+- Create array of array of size m which named machines 
+- Put all the jobs on machine 0 (The first machine)
+- Create PseudoArray of machine jobs of size m which named previous-machines
+- While machines not equals to previous-machines
+  - While a move occured 
+    - from the machine which has the highest *processing time* move the longest possible job to the machine which has the lowest processing time under the problem constraint
+      
+  - While a move occured 
+    - from the machine which has the highest *job count* move the longest possible job to the machine which has the lowest *job count* under the problem constraint
+
+  - While a move occured 
+    - from the machine which has the highest *processing time* move the longest possible job to the machine which has the lowest processing time under the problem constraint
+
+  - For all 2 machines and all job in the first machine and all job in second machine exchange the 2 jobs and if the overall processing time has decreased apply the change and exit the loops
+
+
+* Improvements and Significal developmets 
+
+- At first I have tried to move jobs under constraint until there is not more moves and then exchange once,
+  - This Procedure was not effective
+- I've tried couple of different combinations of movement and exchanges that were not so great 

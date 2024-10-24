@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-05-08 Wed 21:31 -->
+<!-- 2024-10-24 Thu 19:26 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Local Search Algorithm</title>
@@ -11,9 +11,11 @@
 <meta name="generator" content="Org Mode" />
 <link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/htmlize.css"/>
 <link rel="stylesheet" type="text/css" href="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/css/readtheorg.css"/>
+<link rel="stylesheet" type="text/css" href="src/readtheorg_theme/css/search.css"/>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/lib/js/jquery.stickytableheaders.min.js"></script>
+<script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/search.js"></script>
 <script type="text/javascript" src="https://fniessen.github.io/org-html-themes/src/readtheorg_theme/js/readtheorg.js"></script>
 </head>
 <body>
@@ -23,19 +25,23 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org1f7bb93">1. Website</a></li>
-<li><a href="#orgb055871">2. Quickstart</a></li>
-<li><a href="#org425adf8">3. Abstract</a>
+<li><a href="#orgd8ae116">1. Website</a></li>
+<li><a href="#org8e8091a">2. Quickstart</a></li>
+<li><a href="#org911e6eb">3. Visualizations</a></li>
+<li><a href="#org3a0453e">4. Abstract</a>
 <ul>
-<li><a href="#org24c3784">3.1. Input</a></li>
-<li><a href="#orgc738512">3.2. Goal</a></li>
+<li><a href="#orgcde8235">4.1. Input</a></li>
+<li><a href="#orgc9300fc">4.2. Goal</a></li>
 </ul>
 </li>
+<li><a href="#org4a10396">5. Command to test</a></li>
+<li><a href="#org0874753">6. Algorithm Local Search Barak&rsquo;s heuristic</a></li>
+<li><a href="#orgd97489b">7. Improvements and Significal developmets</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-org1f7bb93" class="outline-2">
-<h2 id="org1f7bb93"><span class="section-number-2">1.</span> Website</h2>
+<div id="outline-container-orgd8ae116" class="outline-2">
+<h2 id="orgd8ae116"><span class="section-number-2">1.</span> Website</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 For Reading the docs with beautiful web please visit
@@ -43,8 +49,8 @@ For Reading the docs with beautiful web please visit
 </p>
 </div>
 </div>
-<div id="outline-container-orgb055871" class="outline-2">
-<h2 id="orgb055871"><span class="section-number-2">2.</span> Quickstart</h2>
+<div id="outline-container-org8e8091a" class="outline-2">
+<h2 id="org8e8091a"><span class="section-number-2">2.</span> Quickstart</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 In order to run the program one should clone the repo and run the following command
@@ -82,13 +88,25 @@ also there is more output contents
 </p>
 </div>
 </div>
-
-
-
-
-<div id="outline-container-org425adf8" class="outline-2">
-<h2 id="org425adf8"><span class="section-number-2">3.</span> Abstract</h2>
+<div id="outline-container-org911e6eb" class="outline-2">
+<h2 id="org911e6eb"><span class="section-number-2">3.</span> Visualizations</h2>
 <div class="outline-text-2" id="text-3">
+<p>
+for animation creation one can use the following command
+</p>
+
+<div class="org-src-container">
+<pre class="src src-bash">python local_search_algorithm.py --input_path possible_solutions/sol3/input/input.py --output_dir possible_solutions/sol3 --visualize_simple --animation_flag
+</pre>
+</div>
+<p>
+This will create a new folder in <code>output</code> directory called <code>animation</code> with GIF
+</p>
+</div>
+</div>
+<div id="outline-container-org3a0453e" class="outline-2">
+<h2 id="org3a0453e"><span class="section-number-2">4.</span> Abstract</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 The Project try to solve the following schedule problem
 </p>
@@ -97,9 +115,9 @@ The Project try to solve the following schedule problem
 Scheduling with cardinality constraints.
 </p>
 </div>
-<div id="outline-container-org24c3784" class="outline-3">
-<h3 id="org24c3784"><span class="section-number-3">3.1.</span> Input</h3>
-<div class="outline-text-3" id="text-3-1">
+<div id="outline-container-orgcde8235" class="outline-3">
+<h3 id="orgcde8235"><span class="section-number-3">4.1.</span> Input</h3>
+<div class="outline-text-3" id="text-4-1">
 <p>
 An integer number of (identical) machines m ≥ 2. A set of n jobs J =
 {1, 2, . . . , n}, where job j has an integer processing time p<sub>j</sub> &gt; 0. A positive integer
@@ -107,10 +125,9 @@ parameter k.
 </p>
 </div>
 </div>
-
-<div id="outline-container-orgc738512" class="outline-3">
-<h3 id="orgc738512"><span class="section-number-3">3.2.</span> Goal</h3>
-<div class="outline-text-3" id="text-3-2">
+<div id="outline-container-orgc9300fc" class="outline-3">
+<h3 id="orgc9300fc"><span class="section-number-3">4.2.</span> Goal</h3>
+<div class="outline-text-3" id="text-4-2">
 <p>
 Find a partition (assignment) of the jobs into subsets, I<sub>1</sub>, I<sub>2</sub>, . . . , I<sub>m</sub>, where
 for any 3 ≤ i ≤ m, it holds that |I<sub>i</sub>| ≤ k (a cardinality constraint of k is enforced for
@@ -120,10 +137,68 @@ index is at least 3 can receive at most k jobs).
 </div>
 </div>
 </div>
+<div id="outline-container-org4a10396" class="outline-2">
+<h2 id="org4a10396"><span class="section-number-2">5.</span> Command to test</h2>
+<div class="outline-text-2" id="text-5">
+<div class="org-src-container">
+<pre class="src src-bash"><span style="color: #8f3f71;">sudo</span> python launcher.py --input_path possible_solutions/lea_inputs/question_3/2l/input/input.py --output_dir possible_solutions/lea_inputs/question_3/2l --visualize_simple --animation_flag
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-org0874753" class="outline-2">
+<h2 id="org0874753"><span class="section-number-2">6.</span> Algorithm Local Search Barak&rsquo;s heuristic</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+How the Final algorithm works
+Given an array of jobs which I&rsquo;ll call processing<sub>arr</sub> , number of machines which will be marked with m , and a maximus job number for machine of greater index of 3 which be be marked as k
+</p>
+
+<p>
+The following process will take place
+</p>
+<ul class="org-ul">
+<li>Create array of array of size m which named machines</li>
+<li>Put all the jobs on machine 0 (The first machine)</li>
+<li>Create PseudoArray of machine jobs of size m which named previous-machines</li>
+<li>While machines not equals to previous-machines
+<ul class="org-ul">
+<li>While a move occured 
+<ul class="org-ul">
+<li>from the machine which has the highest <b>processing time</b> move the longest possible job to the machine which has the lowest processing time under the problem constraint</li>
+</ul></li>
+
+<li>While a move occured 
+<ul class="org-ul">
+<li>from the machine which has the highest <b>job count</b> move the longest possible job to the machine which has the lowest <b>job count</b> under the problem constraint</li>
+</ul></li>
+
+<li>While a move occured 
+<ul class="org-ul">
+<li>from the machine which has the highest <b>processing time</b> move the longest possible job to the machine which has the lowest processing time under the problem constraint</li>
+</ul></li>
+
+<li>For all 2 machines and all job in the first machine and all job in second machine exchange the 2 jobs and if the overall processing time has decreased apply the change and exit the loops</li>
+</ul></li>
+</ul>
+</div>
+</div>
+<div id="outline-container-orgd97489b" class="outline-2">
+<h2 id="orgd97489b"><span class="section-number-2">7.</span> Improvements and Significal developmets</h2>
+<div class="outline-text-2" id="text-7">
+<ul class="org-ul">
+<li>At first I have tried to move jobs under constraint until there is not more moves and then exchange once,
+<ul class="org-ul">
+<li>This Procedure was not effective</li>
+</ul></li>
+<li>I&rsquo;ve tried couple of different combinations of movement and exchanges that were not so great</li>
+</ul>
+</div>
+</div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Barak-Nadav Diker</p>
-<p class="date">Created: 2024-05-08 Wed 21:31</p>
+<p class="date">Created: 2024-10-24 Thu 19:26</p>
 </div>
 </body>
 </html>
